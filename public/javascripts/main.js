@@ -95,9 +95,9 @@ $.ajax({
   });
 });
 
-let geoData = JSON.parse(JSON.stringify(data));
+const geoData = JSON.parse(JSON.stringify(data));
 
-let regionGeoJson = [];
+const regionGeoJson = [];
 let loadCount = 0;
 
 const tooltip = $(

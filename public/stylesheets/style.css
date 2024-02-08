@@ -99,3 +99,6 @@ li a:hover:not(.active) {
   background: rgba(255, 149, 79, 0.7);
 }
 
+.area {
+  padding: 5px;
+}
