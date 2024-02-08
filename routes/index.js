@@ -6,5 +6,8 @@ const locationModel = require("../model/location");
 router.get("/", (req, res, next) => {
   res.render("kakao", { title: "Express" });
 });
+router.get("/naver", (req, res, next) => {
+  res.render("index", { title: "Express" });
+});
 
 module.exports = router;

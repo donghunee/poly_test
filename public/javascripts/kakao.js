@@ -11,15 +11,26 @@ geoData.features.forEach((unit, index) => {
   let coordinates = [];
   let name = "";
   coordinates = unit.geometry.coordinates;
-  name = unit.properties.temp;
+  name = unit.properties.EMD_KOR_NM;
 
   const ob = new Object();
   ob.name = name;
   ob.path = [];
 
-  coordinates[0][0].forEach((coordinate) => {
-    ob.path.push(new kakao.maps.LatLng(coordinate[1], coordinate[0]));
-  });
+  if (unit.geometry.type !== "MultiPolygon") {
+    coordinates[0].forEach((coordinate) => {
+      ob.path.push(new kakao.maps.LatLng(coordinate[1], coordinate[0]));
+    });
+  } else {
+    coordinates.forEach((coordinate) => {
+      const geo = [];
+      coordinate[0].forEach((item) => {
+        geo.push(new kakao.maps.LatLng(item[1], item[0]));
+      });
+      ob.path.push(geo);
+    });
+  }
+
   areas.push(ob);
 });
 
