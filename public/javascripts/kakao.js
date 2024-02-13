@@ -6,6 +6,11 @@ const mapContainer = document.getElementById("map"),
 
 const geoData = JSON.parse(JSON.stringify(data));
 const areas = [];
+const colors = {
+  DEFAULT: "#ff0000",
+  CLICK: "#84f97a",
+  CLICK_HOVER: "#c27c3d",
+};
 
 geoData.features.forEach((unit, index) => {
   let coordinates = [];
@@ -45,17 +50,22 @@ function displayArea(area) {
     map: map,
     path: area.path,
     strokeWeight: 2,
-    strokeColor: "#ff0000",
-    strokeOpacity: 0.4,
-    fillColor: "#ff0000",
+    strokeColor: "none",
+    strokeOpacity: 0.001,
+    fillColor: colors.DEFAULT,
     fillOpacity: 0.0001,
   });
 
+  polygon.isClick = false;
+
   kakao.maps.event.addListener(polygon, "mouseover", (mouseEvent) => {
-    polygon.setOptions({ fillOpacity: 0.6 });
+    if (polygon.isClick) {
+      polygon.setOptions({ fillOpacity: 0.6, fillColor: colors.CLICK_HOVER });
+    } else {
+      polygon.setOptions({ fillOpacity: 0.6 });
+    }
 
     customOverlay.setContent('<div class="area">' + area.name + "</div>");
-
     customOverlay.setPosition(mouseEvent.latLng);
     customOverlay.setMap(map);
   });
@@ -65,9 +75,34 @@ function displayArea(area) {
   });
 
   kakao.maps.event.addListener(polygon, "mouseout", () => {
-    polygon.setOptions({ fillOpacity: 0.0001 });
+    if (polygon.isClick) {
+      polygon.setOptions({
+        fillOpacity: 0.6,
+        fillColor: colors.CLICK,
+        strokeColor: colors.CLICK,
+      });
+    } else {
+      polygon.setOptions({ fillOpacity: 0.0001 });
+    }
     customOverlay.setMap(null);
   });
 
-  kakao.maps.event.addListener(polygon, "click", (mouseEvent) => {});
+  kakao.maps.event.addListener(polygon, "click", (mouseEvent) => {
+    if (polygon.isClick) {
+      polygon.setOptions({
+        strokeColor: "none",
+        strokeOpacity: 0.001,
+        fillColor: colors.DEFAULT,
+        fillOpacity: 0.0001,
+      });
+      polygon.isClick = false;
+    } else {
+      polygon.setOptions({
+        fillOpacity: 0.6,
+        fillColor: colors.CLICK,
+        strokeColor: colors.CLICK,
+      });
+      polygon.isClick = true;
+    }
+  });
 }
