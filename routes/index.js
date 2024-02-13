@@ -3,10 +3,8 @@ var router = express.Router();
 const locationModel = require("../model/location");
 
 /* GET home page. */
+
 router.get("/", (req, res, next) => {
-  res.render("kakao", { title: "Express" });
-});
-router.get("/naver", (req, res, next) => {
   res.render("index", { title: "Express" });
 });
 
