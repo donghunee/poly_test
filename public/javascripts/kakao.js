@@ -5,11 +5,19 @@ const mapContainer = document.getElementById("map"),
   };
 
 const geoData = JSON.parse(JSON.stringify(data));
+
 const areas = [];
+
 const colors = {
   DEFAULT: "#ff0000",
-  CLICK: "#84f97a",
-  CLICK_HOVER: "#c27c3d",
+  CLICK: "#461FBB",
+  CLICK_HOVER: "#6b1996",
+};
+
+const opacity = {
+  DEFAULT: 0.0001,
+  HOVER: 0.5,
+  CLICK: 0.7,
 };
 
 geoData.features.forEach((unit, index) => {
@@ -42,27 +50,42 @@ geoData.features.forEach((unit, index) => {
 const map = new kakao.maps.Map(mapContainer, mapOption),
   customOverlay = new kakao.maps.CustomOverlay({}),
   infowindow = new kakao.maps.InfoWindow({ removable: true });
+const sigPolyArr = [];
 
-areas.forEach((area) => displayArea(area));
+map.setCursor("default");
 
-function displayArea(area) {
+areas.forEach((area) => displayArea(area, "default"));
+
+function displayArea(area, type) {
   const polygon = new kakao.maps.Polygon({
     map: map,
     path: area.path,
-    strokeWeight: 2,
     strokeColor: "none",
-    strokeOpacity: 0.001,
     fillColor: colors.DEFAULT,
-    fillOpacity: 0.0001,
+    fillOpacity: opacity.DEFAULT,
+    zIndex: 1,
   });
 
   polygon.isClick = false;
 
   kakao.maps.event.addListener(polygon, "mouseover", (mouseEvent) => {
     if (polygon.isClick) {
-      polygon.setOptions({ fillOpacity: 0.6, fillColor: colors.CLICK_HOVER });
+      polygon.setOptions({
+        fillOpacity: opacity.HOVER,
+        fillColor: colors.CLICK_HOVER,
+        strokeColor: colors.CLICK_HOVER,
+        strokeWeight: 3,
+        strokeOpacity: 1,
+        zIndex: 9,
+      });
     } else {
-      polygon.setOptions({ fillOpacity: 0.6 });
+      polygon.setOptions({
+        fillOpacity: opacity.HOVER,
+        strokeColor: colors.DEFAULT,
+        strokeWeight: 3,
+        strokeOpacity: 1,
+        zIndex: 9,
+      });
     }
 
     customOverlay.setContent('<div class="area">' + area.name + "</div>");
@@ -77,32 +100,49 @@ function displayArea(area) {
   kakao.maps.event.addListener(polygon, "mouseout", () => {
     if (polygon.isClick) {
       polygon.setOptions({
-        fillOpacity: 0.6,
+        fillOpacity: opacity.CLICK,
         fillColor: colors.CLICK,
         strokeColor: colors.CLICK,
+        zIndex: 1,
       });
     } else {
-      polygon.setOptions({ fillOpacity: 0.0001 });
+      polygon.setOptions({
+        fillOpacity: opacity.DEFAULT,
+        strokeOpacity: 0,
+        zIndex: 1,
+      });
     }
     customOverlay.setMap(null);
   });
 
-  kakao.maps.event.addListener(polygon, "click", (mouseEvent) => {
+  kakao.maps.event.addListener(polygon, "click", () => {
     if (polygon.isClick) {
       polygon.setOptions({
         strokeColor: "none",
         strokeOpacity: 0.001,
         fillColor: colors.DEFAULT,
-        fillOpacity: 0.0001,
+        fillOpacity: opacity.DEFAULT,
       });
       polygon.isClick = false;
     } else {
       polygon.setOptions({
-        fillOpacity: 0.6,
+        fillOpacity: opacity.CLICK,
         fillColor: colors.CLICK,
         strokeColor: colors.CLICK,
+        strokeWeight: 3,
+        strokeOpacity: 1,
       });
       polygon.isClick = true;
     }
   });
 }
+
+// kakao.maps.event.addListener(map, "zoom_changed", () => {
+//   const level = map.getLevel();
+//   if (level <= 7) {
+//     sigPolyArr.forEach((poly) => poly.setMap(null));
+//   } else {
+//     console.log("11");
+//     sigPolyArr.forEach((poly) => poly.setMap(map));
+//   }
+// });
