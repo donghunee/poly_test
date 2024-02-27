@@ -6,6 +6,7 @@ const mapContainer = document.getElementById("map"),
 
 const geoData = JSON.parse(JSON.stringify(data));
 
+console.log(geoData);
 const areas = [];
 
 const colors = {
